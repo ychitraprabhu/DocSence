@@ -1,0 +1,207 @@
+@import url('https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,600&family=Inter:wght@400;500;600&display=swap');
+
+* {
+    box-sizing: border-box;
+}
+
+body {
+    font-family: 'Inter', sans-serif;
+    background: #EDF1EC;
+    color: #2E332E;
+    margin: 0;
+    padding: 40px 48px;
+    min-height: 100vh;
+    display: grid;
+    grid-template-columns: 340px 1fr;
+    grid-template-rows: auto auto auto 1fr;
+    grid-template-areas:
+        "title   title"
+        "tagline tagline"
+        "profile risk"
+        "form    list";
+    column-gap: 28px;
+    row-gap: 20px;
+}
+
+h1 {
+    grid-area: title;
+    font-family: 'Fraunces', serif;
+    font-weight: 600;
+    font-size: 44px;
+    margin: 0;
+    color: #33422F;
+}
+
+h1 + p {
+    grid-area: tagline;
+    color: #6B7566;
+    margin: 0 0 8px 0;
+    font-size: 15px;
+}
+
+h2 {
+    font-family: 'Fraunces', serif;
+    font-weight: 600;
+    font-size: 20px;
+    margin: 0 0 16px 0;
+    border-bottom: none;
+    color: #33422F;
+}
+
+#profileSection, #riskSection, #addItemSection, #itemListSection {
+    background: #FBFCF9;
+    border-radius: 20px;
+    padding: 24px 26px;
+    box-shadow: 0 6px 20px rgba(51, 66, 47, 0.06);
+}
+
+#profileSection {
+    grid-area: profile;
+    display: flex;
+    gap: 10px;
+    align-items: center;
+    flex-wrap: wrap;
+}
+
+#profileSection label {
+    margin: 0;
+    font-weight: 500;
+    color: #4A554A;
+}
+
+#riskSection {
+    grid-area: risk;
+    background: linear-gradient(135deg, #FBFCF9 0%, #F3EDE3 100%);
+    display: flex;
+    align-items: center;
+}
+
+#riskSection p {
+    margin: 0;
+    font-size: 15px;
+    color: #6B7566;
+}
+
+#riskTotal {
+    font-family: 'Fraunces', serif;
+    font-size: 32px;
+    font-weight: 600;
+    color: #C1694F;
+    display: block;
+}
+
+#addItemSection {
+    grid-area: form;
+    align-self: start;
+    position: sticky;
+    top: 40px;
+}
+
+#itemListSection {
+    grid-area: list;
+}
+
+label {
+    display: block;
+    margin-top: 14px;
+    font-size: 13px;
+    font-weight: 500;
+    color: #4A554A;
+}
+
+#profileSection label {
+    margin-top: 0;
+}
+
+input, select {
+    width: 100%;
+    padding: 10px 12px;
+    margin-top: 6px;
+    border: 1.5px solid #DDE3D9;
+    border-radius: 10px;
+    box-sizing: border-box;
+    font-size: 14px;
+    font-family: 'Inter', sans-serif;
+    background: #fff;
+    color: #2E332E;
+    transition: border-color 0.15s ease;
+}
+
+input:focus, select:focus {
+    outline: none;
+    border-color: #7C9473;
+}
+
+#profileSection select, #profileSection input {
+    width: auto;
+    margin-top: 0;
+}
+
+button {
+    margin-top: 18px;
+    padding: 10px 20px;
+    background: #5C7A54;
+    color: #FBFCF9;
+    border: none;
+    border-radius: 10px;
+    cursor: pointer;
+    font-size: 14px;
+    font-weight: 500;
+    font-family: 'Inter', sans-serif;
+    transition: background 0.15s ease;
+}
+
+button:hover {
+    background: #4A6444;
+}
+
+#profileSection button {
+    margin-top: 0;
+}
+
+#itemList {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(230px, 1fr));
+    gap: 14px;
+}
+
+.item-card {
+    background: #fff;
+    border: 1.5px solid #E3E8DF;
+    border-left: 5px solid #999;
+    border-radius: 14px;
+    padding: 14px 16px;
+}
+
+.item-card.safe { border-left-color: #5C7A54; }
+.item-card.soon { border-left-color: #D6A340; }
+.item-card.urgent { border-left-color: #C1694F; }
+
+.item-name {
+    font-weight: 600;
+    color: #2E332E;
+}
+
+.item-days {
+    font-size: 13px;
+    color: #8A9385;
+    margin-top: 4px;
+}
+
+@media (max-width: 800px) {
+    body {
+        grid-template-columns: 1fr;
+        grid-template-areas:
+            "title"
+            "tagline"
+            "profile"
+            "risk"
+            "form"
+            "list";
+        padding: 24px;
+    }
+
+    #addItemSection {
+        position: static;
+    }
+}
