@@ -166,6 +166,7 @@ button:hover {
 }
 
 .item-card {
+    position: relative;
     background: #fff;
     border: 1.5px solid #E3E8DF;
     border-left: 5px solid #999;
@@ -180,12 +181,125 @@ button:hover {
 .item-name {
     font-weight: 600;
     color: #2E332E;
+    padding-right: 20px;
 }
 
 .item-days {
     font-size: 13px;
     color: #8A9385;
     margin-top: 4px;
+}
+
+.deleteBtn {
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    margin-top: 0;
+    padding: 2px 7px;
+    font-size: 12px;
+    background: transparent;
+    color: #B0B6AC;
+    border: none;
+}
+
+.deleteBtn:hover {
+    background: #C1694F;
+    color: #fff;
+    border-radius: 6px;
+}
+
+.item-value {
+    font-size: 13px;
+    color: #4A554A;
+    margin-top: 6px;
+    font-weight: 500;
+}
+
+.progress-bar {
+    background: #E3E8DF;
+    border-radius: 6px;
+    height: 7px;
+    margin-top: 10px;
+    overflow: hidden;
+}
+
+.progress-fill {
+    height: 100%;
+}
+
+.progress-fill.safe { background: #5C7A54; }
+.progress-fill.soon { background: #D6A340; }
+.progress-fill.urgent { background: #C1694F; }
+
+.receipt-thumb {
+    display: block;
+    width: 50px;
+    height: 50px;
+    object-fit: cover;
+    border-radius: 6px;
+    margin-top: 10px;
+    cursor: pointer;
+}
+
+.modal-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.7);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.modal-overlay.hidden {
+    display: none;
+}
+
+#imageModal {
+    z-index: 1001;
+}
+
+#itemModal {
+    z-index: 1000;
+}
+
+#imageModal img {
+    max-width: 90%;
+    max-height: 90%;
+    border-radius: 8px;
+}
+
+.modal-card {
+    background: #FBFCF9;
+    border-radius: 16px;
+    padding: 24px 26px;
+    max-width: 320px;
+    width: 90%;
+}
+
+.modal-card h3 {
+    font-family: 'Fraunces', serif;
+    margin: 0 0 12px 0;
+    color: #33422F;
+}
+
+.modal-card p {
+    margin: 6px 0;
+    font-size: 14px;
+    color: #4A554A;
+}
+
+.modal-card img {
+    max-width: 120px;
+    border-radius: 8px;
+    margin-top: 10px;
+    cursor: pointer;
+}
+
+.modal-card button {
+    margin-top: 16px;
 }
 
 @media (max-width: 800px) {

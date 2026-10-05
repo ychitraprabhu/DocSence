@@ -19,7 +19,7 @@
     </div>
 
     <div id="riskSection">
-        <p>Expiring this month: <span id="riskTotal">0</span></p>
+        <p>Items expiring this month: <span id="riskTotal">0</span></p>
     </div>
 
     <div id="addItemSection">
@@ -50,6 +50,10 @@
             <label for="itemNotes">Notes</label>
             <input type="text" id="itemNotes">
 
+            <label for="itemReceipt">Receipt (optional)</label>
+            <input type="file" id="itemReceipt" accept="image/*">
+            <img id="receiptPreview" style="display:none; max-width:80px; margin-top:8px; border-radius:6px;">
+
             <button type="submit">Add Item</button>
         </form>
     </div>
@@ -59,8 +63,17 @@
         <div id="itemList"></div>
     </div>
 
+    <div id="imageModal" class="modal-overlay hidden">
+        <img id="modalImage">
+    </div>
+
+    <div id="itemModal" class="modal-overlay hidden">
+        <div id="itemModalContent" class="modal-card"></div>
+    </div>
+
     <script src="storage.js"></script>
     <script src="items.js"></script>
+    <script src="receiptUpload.js"></script>
     <script src="app.js"></script>
 </body>
 </html>

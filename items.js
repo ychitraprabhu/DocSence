@@ -40,18 +40,36 @@ function getDaysUntilExpiry(expiryDate) {
   return Math.round((expiry - today) / msPerDay);
 }
 
-// total value of items expiring this calendar month
-function getFinancialRiskThisMonth(data) {
+// how far through the warranty/coverage period an item is, 0 to 100
+function getProgressPercent(purchaseDate, expiryDate) {
+  const purchase = new Date(purchaseDate);
+  const expiry = new Date(expiryDate);
+  const today = new Date();
+
+  const totalDays = (expiry - purchase) / (1000 * 60 * 60 * 24);
+  const usedDays = (today - purchase) / (1000 * 60 * 60 * 24);
+
+  if (totalDays <= 0) return 100;
+
+  let percent = Math.round((usedDays / totalDays) * 100);
+  if (percent < 0) percent = 0;
+  if (percent > 100) percent = 100;
+
+  return percent;
+}
+
+// how many items expire this calendar month
+function getExpiringCountThisMonth(data) {
   const items = data.profiles[data.activeProfile];
   const today = new Date();
-  let total = 0;
+  let count = 0;
 
   items.forEach(function (item) {
     const expiry = new Date(item.expiryDate);
     if (expiry.getMonth() === today.getMonth() && expiry.getFullYear() === today.getFullYear()) {
-      total += Number(item.value) || 0;
+      count = count + 1;
     }
   });
 
-  return total;
+  return count;
 }
