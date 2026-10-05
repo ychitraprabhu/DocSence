@@ -8,72 +8,49 @@
 </head>
 <body>
 
-    <h1>DocSence</h1>
-    <p>Track when your stuff expires</p>
-
-    <div id="profileSection">
-        <label for="profileSelect">Profile:</label>
-        <select id="profileSelect"></select>
-        <input type="text" id="newProfileName" placeholder="New profile name">
-        <button id="addProfileBtn">Add Profile</button>
+    <!-- heading of the page -->
+    <div class="header">
+        <h1>DocSence</h1>
+        <p>Track when your stuff expires</p>
     </div>
 
-    <div id="riskSection">
-        <p>Items expiring this month: <span id="riskTotal">0</span></p>
+    <div class="container">
+
+        <!-- form to add a new item -->
+        <div class="box form-box">
+            <h2>Add Item</h2>
+            <form id="itemForm">
+                <label>Name</label>
+                <input type="text" id="name" placeholder="e.g. Laptop warranty" required>
+
+                <label>Category</label>
+                <select id="category">
+                    <option value="Warranty">Warranty</option>
+                    <option value="Insurance">Insurance</option>
+                    <option value="Subscription">Subscription</option>
+                    <option value="Document">Document</option>
+                    <option value="Other">Other</option>
+                </select>
+
+                <label>Purchase Date</label>
+                <input type="date" id="purchaseDate">
+
+                <label>Expiry Date</label>
+                <input type="date" id="expiryDate" required>
+
+                <button type="submit">Add Item</button>
+            </form>
+        </div>
+
+        <!-- list of all items -->
+        <div class="box list-box">
+            <h2>Your Items</h2>
+            <p class="count-text">Expiring this month: <span id="monthCount">0</span></p>
+            <div id="itemList"></div>
+        </div>
+
     </div>
 
-    <div id="addItemSection">
-        <h2>Add Item</h2>
-        <form id="addItemForm">
-            <label for="itemName">Name</label>
-            <input type="text" id="itemName" required>
-
-            <label for="itemCategory">Category</label>
-            <select id="itemCategory">
-                <option value="warranty">Warranty</option>
-                <option value="insurance">Insurance</option>
-                <option value="subscription">Subscription</option>
-                <option value="document">Document</option>
-                <option value="electronics">Electronics</option>
-                <option value="other">Other</option>
-            </select>
-
-            <label for="itemExpiry">Expiry Date</label>
-            <input type="date" id="itemExpiry" required>
-
-            <label for="itemPurchase">Purchase Date</label>
-            <input type="date" id="itemPurchase">
-
-            <label for="itemValue">Value (₹)</label>
-            <input type="number" id="itemValue" min="0">
-
-            <label for="itemNotes">Notes</label>
-            <input type="text" id="itemNotes">
-
-            <label for="itemReceipt">Receipt (optional)</label>
-            <input type="file" id="itemReceipt" accept="image/*">
-            <img id="receiptPreview" style="display:none; max-width:80px; margin-top:8px; border-radius:6px;">
-
-            <button type="submit">Add Item</button>
-        </form>
-    </div>
-
-    <div id="itemListSection">
-        <h2>Your Items</h2>
-        <div id="itemList"></div>
-    </div>
-
-    <div id="imageModal" class="modal-overlay hidden">
-        <img id="modalImage">
-    </div>
-
-    <div id="itemModal" class="modal-overlay hidden">
-        <div id="itemModalContent" class="modal-card"></div>
-    </div>
-
-    <script src="storage.js"></script>
-    <script src="items.js"></script>
-    <script src="receiptUpload.js"></script>
-    <script src="app.js"></script>
+    <script src="script.js"></script>
 </body>
 </html>
