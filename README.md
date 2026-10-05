@@ -1,20 +1,22 @@
 # DocSence
 
-A simple website to track when your warranties, insurance, subscriptions and documents expire.
+Track when your stuff expires — warranties, insurance, subscriptions, documents — before it's too late to do anything about it.
 
 Built with plain HTML, CSS and JavaScript. Items are saved in the browser using localStorage, so no backend or login is needed.
 
 ## Features
-- Add an item with a name, category, purchase date and expiry date
-- See how many days are left for each item
-- Colors show how soon it expires (green = safe, yellow = within 30 days, red = within 7 days or expired)
-- Shows how many items expire this month
-- Delete items you don't need
+- Add items with a category, expiry date, purchase date, value, notes, and an optional receipt photo
+- See at a glance what's expiring soon (color-coded: green / yellow / red)
+- Track multiple local profiles (e.g. yourself and a family member) — note: these are just a filter, not real accounts, so data stays on one device/browser
+- A running total of how much value is expiring this month
 
 ## Files
-- `index.html` - the page
-- `styles.css` - the styling
-- `script.js` - the logic (add, delete, days left, saving)
+- `index.html` — page structure
+- `styles.css` — layout and styling
+- `storage.js` — localStorage read/write
+- `items.js` — add/edit/delete items, expiry and risk calculations
+- `receiptUpload.js` — reads a receipt photo into base64 for storage
+- `app.js` — wires everything together and renders the UI
 
-## How to run
-Download the files and open `index.html` in any browser.
+## Running it
+Just open `index.html` in a browser. No build step, no server needed.
