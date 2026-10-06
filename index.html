@@ -1,29 +1,44 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
     <title>DocSence</title>
+
     <link rel="stylesheet" href="styles.css">
 </head>
+
 <body>
 
-    <!-- heading of the page -->
+    <!-- page heading -->
     <div class="header">
         <h1>DocSence</h1>
         <p>Track when your stuff expires</p>
     </div>
 
+
     <div class="container">
 
-        <!-- form to add a new item -->
+        <!-- form for adding items -->
         <div class="box form-box">
+
             <h2>Add Item</h2>
+
             <form id="itemForm">
+
                 <label>Name</label>
-                <input type="text" id="name" placeholder="e.g. Laptop warranty" required>
+                <input
+                    type="text"
+                    id="name"
+                    placeholder="e.g. Laptop warranty"
+                    required
+                >
+
 
                 <label>Category</label>
+
                 <select id="category">
                     <option value="Warranty">Warranty</option>
                     <option value="Insurance">Insurance</option>
@@ -32,25 +47,40 @@
                     <option value="Other">Other</option>
                 </select>
 
+
                 <label>Purchase Date</label>
                 <input type="date" id="purchaseDate">
+
 
                 <label>Expiry Date</label>
                 <input type="date" id="expiryDate" required>
 
+
                 <button type="submit">Add Item</button>
+
             </form>
+
         </div>
 
-        <!-- list of all items -->
+
+        <!-- section of all items -->
         <div class="box list-box">
+
             <h2>Your Items</h2>
-            <p class="count-text">Expiring this month: <span id="monthCount">0</span></p>
+
+            <p class="count-text">
+                Expiring this month:
+                <span id="expiryCount">0</span>
+            </p>
+
             <div id="itemList"></div>
+
         </div>
 
     </div>
 
+
     <script src="script.js"></script>
+
 </body>
 </html>

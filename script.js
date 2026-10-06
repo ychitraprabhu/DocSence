@@ -1,64 +1,92 @@
-// get the things we need from the page
-var form = document.getElementById("itemForm");
-var itemList = document.getElementById("itemList");
-var monthCount = document.getElementById("monthCount");
+// get the elements from the page
+const form = document.getElementById("itemForm");
+const itemList = document.getElementById("itemList");
+const expiryCount = document.getElementById("expiryCount");
 
-// load saved items from the browser (or start with an empty list)
-var items = JSON.parse(localStorage.getItem("docsenceItems")) || [];
 
-// save the items list in the browser
+// get saved items from localStorage
+let items = JSON.parse(localStorage.getItem("items")) || [];
+
+
+// save items in localStorage
 function saveItems() {
-    localStorage.setItem("docsenceItems", JSON.stringify(items));
+    localStorage.setItem("items", JSON.stringify(items));
 }
 
-// find how many days are left until a date
+
+// find how many days are left
 function getDaysLeft(dateText) {
-    var today = new Date();
-    var expiry = new Date(dateText);
+    const today = new Date();
+    const expiry = new Date(dateText);
+
+    // set both dates to midnight
     today.setHours(0, 0, 0, 0);
     expiry.setHours(0, 0, 0, 0);
 
-    var oneDay = 1000 * 60 * 60 * 24;
+    const oneDay = 1000 * 60 * 60 * 24;
+
     return Math.round((expiry - today) / oneDay);
 }
 
-// turn a date like 2026-10-05 into 5 Oct 2026
+
+// change the date into a simple format
 function formatDate(dateText) {
-    var date = new Date(dateText);
-    var months = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
-    return date.getDate() + " " + months[date.getMonth()] + " " + date.getFullYear();
+    const date = new Date(dateText);
+
+    const months = [
+        "Jan", "Feb", "Mar", "Apr", "May", "Jun",
+        "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"
+    ];
+
+    return date.getDate() + " " +
+           months[date.getMonth()] + " " +
+           date.getFullYear();
 }
 
-// write the days left message
+
+// show the correct message for the expiry
 function getDaysText(daysLeft) {
+
     if (daysLeft < 0) {
         return "Expired " + Math.abs(daysLeft) + " days ago";
     }
+
     if (daysLeft === 0) {
         return "Expires today";
     }
+
     return daysLeft + " days left";
 }
 
-// pick a color class: red if less than 7 days, yellow if less than 30, else green
+
+// choose the card color based on days left
 function getColorClass(daysLeft) {
+
     if (daysLeft < 7) {
         return "red";
     }
+
     if (daysLeft < 30) {
         return "yellow";
     }
+
     return "green";
 }
 
-// count how many items expire in the current month
-function countThisMonth() {
-    var today = new Date();
-    var count = 0;
 
-    for (var i = 0; i < items.length; i++) {
-        var expiry = new Date(items[i].expiryDate);
-        if (expiry.getMonth() === today.getMonth() && expiry.getFullYear() === today.getFullYear()) {
+// count items expiring this month
+function countThisMonth() {
+    const today = new Date();
+    let count = 0;
+
+    for (let i = 0; i < items.length; i++) {
+
+        const expiry = new Date(items[i].expiryDate);
+
+        if (
+            expiry.getMonth() === today.getMonth() &&
+            expiry.getFullYear() === today.getFullYear()
+        ) {
             count++;
         }
     }
@@ -66,99 +94,169 @@ function countThisMonth() {
     return count;
 }
 
-// show all items on the page
+
+// display all the items
 function showItems() {
+
     itemList.innerHTML = "";
 
-    // put the items that expire first at the top
+    // sort items by expiry date
     items.sort(function (a, b) {
-        return getDaysLeft(a.expiryDate) - getDaysLeft(b.expiryDate);
+        return getDaysLeft(a.expiryDate) -
+               getDaysLeft(b.expiryDate);
     });
 
-    // message when there are no items
+
+    // show a message if there are no items
     if (items.length === 0) {
-        itemList.innerHTML = "<p class='empty-text'>No items yet. Add your first one!</p>";
+
+        itemList.innerHTML =
+            "<p class='empty-text'>No items yet. Add your first one!</p>";
     }
 
-    // make one card for each item
-    for (var i = 0; i < items.length; i++) {
-        var item = items[i];
-        var daysLeft = getDaysLeft(item.expiryDate);
 
-        var card = document.createElement("div");
+    // create a card for each item
+    for (let i = 0; i < items.length; i++) {
+
+        const item = items[i];
+        const daysLeft = getDaysLeft(item.expiryDate);
+
+
+        // create the card
+        const card = document.createElement("div");
         card.className = "card " + getColorClass(daysLeft);
 
-        var name = document.createElement("h3");
+
+        // add item name
+        const name = document.createElement("h3");
         name.textContent = item.name;
 
-        var category = document.createElement("p");
+
+        // add category
+        const category = document.createElement("p");
         category.className = "category";
         category.textContent = item.category;
 
-        var days = document.createElement("p");
+
+        // add days left
+        const days = document.createElement("p");
         days.className = "days";
         days.textContent = getDaysText(daysLeft);
 
-        var expiry = document.createElement("p");
-        expiry.textContent = "Expires: " + formatDate(item.expiryDate);
 
+        // add expiry date
+        const expiry = document.createElement("p");
+        expiry.textContent =
+            "Expires: " + formatDate(item.expiryDate);
+
+
+        // add details to the card
         card.appendChild(name);
         card.appendChild(category);
         card.appendChild(days);
         card.appendChild(expiry);
 
-        // only show purchase date if the user typed one
+
+        // show purchase date if it was entered
         if (item.purchaseDate) {
-            var bought = document.createElement("p");
-            bought.textContent = "Bought: " + formatDate(item.purchaseDate);
+
+            const bought = document.createElement("p");
+
+            bought.textContent =
+                "Bought: " + formatDate(item.purchaseDate);
+
             card.appendChild(bought);
         }
 
-        // delete button
-        var deleteButton = document.createElement("button");
+
+        // create delete button
+        const deleteButton = document.createElement("button");
+
         deleteButton.className = "delete-button";
         deleteButton.textContent = "Delete";
+
+        // store the item id in the button
         deleteButton.setAttribute("data-id", item.id);
+
         card.appendChild(deleteButton);
 
+
+        // add the card to the page
         itemList.appendChild(card);
     }
 
-    monthCount.textContent = countThisMonth();
+
+    // update the expiry count
+    expiryCount.textContent = countThisMonth();
 }
 
-// when the form is submitted, add a new item
+
+// add a new item when the form is submitted
 form.addEventListener("submit", function (event) {
+
+    // stop the page from refreshing
     event.preventDefault();
 
-    var newItem = {
+
+    // create a new item
+    const newItem = {
+
         id: Date.now(),
+
         name: document.getElementById("name").value,
+
         category: document.getElementById("category").value,
-        purchaseDate: document.getElementById("purchaseDate").value,
-        expiryDate: document.getElementById("expiryDate").value
+
+        purchaseDate:
+            document.getElementById("purchaseDate").value,
+
+        expiryDate:
+            document.getElementById("expiryDate").value
     };
 
+
+    // add the item to the list
     items.push(newItem);
+
+    // save the updated list
     saveItems();
+
+    // clear the form
     form.reset();
+
+    // show the updated list
     showItems();
 });
 
-// when a delete button is clicked, remove that item
-itemList.addEventListener("click", function (event) {
-    if (event.target.className === "delete-button") {
-        var id = Number(event.target.getAttribute("data-id"));
 
+// delete an item when the delete button is clicked
+itemList.addEventListener("click", function (event) {
+
+    // check if the delete button was clicked
+    if (event.target.className === "delete-button") {
+
+        const id =
+            Number(event.target.getAttribute("data-id"));
+
+
+        // ask before deleting
         if (confirm("Delete this item?")) {
+
+            // keep every item except the one being deleted
             items = items.filter(function (item) {
                 return item.id !== id;
             });
+
+
+            // save the updated list
             saveItems();
+
+            // show the updated list
             showItems();
         }
     }
 });
 
-// show the items when the page opens
+
+// show saved items when the page opens
 showItems();
