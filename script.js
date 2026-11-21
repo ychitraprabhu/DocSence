@@ -45,6 +45,14 @@ function formatDate(dateText) {
 }
 
 
+// change a date into text like 2025-03-12 (the format date inputs use)
+function toDateText(date) {
+    return date.getFullYear() + "-" +
+           String(date.getMonth() + 1).padStart(2, "0") + "-" +
+           String(date.getDate()).padStart(2, "0");
+}
+
+
 // show the correct message for the expiry
 function getDaysText(daysLeft) {
 
@@ -209,6 +217,18 @@ function showItems() {
         }
 
 
+        // create add to calendar button
+        const calendarButton = document.createElement("button");
+
+        calendarButton.className = "calendar-button";
+        calendarButton.textContent = "Add to Calendar";
+
+        // store the item id in the button
+        calendarButton.setAttribute("data-id", item.id);
+
+        card.appendChild(calendarButton);
+
+
         // create delete button
         const deleteButton = document.createElement("button");
 
@@ -228,6 +248,72 @@ function showItems() {
 
     // update the expiry count
     expiryCount.textContent = countThisMonth();
+}
+
+
+
+// find an item using its id
+function findItem(id) {
+
+    for (let i = 0; i < items.length; i++) {
+        if (items[i].id === id) {
+            return items[i];
+        }
+    }
+
+    return null;
+}
+
+
+// download a calendar file (.ics) for the expiry date
+function downloadCalendar(item) {
+
+    // dates in the file look like 20250312
+    const start = item.expiryDate.replace(/-/g, "");
+
+    // an all day event ends on the next day
+    const parts = item.expiryDate.split("-");
+    const nextDay = new Date(
+        Number(parts[0]),
+        Number(parts[1]) - 1,
+        Number(parts[2]) + 1
+    );
+    const end = toDateText(nextDay).replace(/-/g, "");
+
+    // remove characters that break the file
+    const title = item.name.replace(/[,;\n]/g, " ");
+
+    const stamp =
+        new Date().toISOString().replace(/[-:]/g, "").split(".")[0] + "Z";
+
+    const lines = [
+        "BEGIN:VCALENDAR",
+        "VERSION:2.0",
+        "PRODID:-//DocSence//EN",
+        "BEGIN:VEVENT",
+        "UID:" + item.id + "@docsence",
+        "DTSTAMP:" + stamp,
+        "DTSTART;VALUE=DATE:" + start,
+        "DTEND;VALUE=DATE:" + end,
+        "SUMMARY:" + title + " expires",
+        "BEGIN:VALARM",
+        "TRIGGER:-P7D",
+        "ACTION:DISPLAY",
+        "DESCRIPTION:Expires in 7 days",
+        "END:VALARM",
+        "END:VEVENT",
+        "END:VCALENDAR"
+    ];
+
+    // make the file and download it
+    const file = new Blob([lines.join("\r\n")], { type: "text/calendar" });
+
+    const link = document.createElement("a");
+    link.href = URL.createObjectURL(file);
+    link.download = title + "-expiry.ics";
+    link.click();
+
+    URL.revokeObjectURL(link.href);
 }
 
 
@@ -274,8 +360,22 @@ form.addEventListener("submit", function (event) {
 searchBox.addEventListener("input", showItems);
 
 
-// delete an item when the delete button is clicked
+// handle the delete and calendar buttons
 itemList.addEventListener("click", function (event) {
+
+    // check if the calendar button was clicked
+    if (event.target.className === "calendar-button") {
+
+        const id =
+            Number(event.target.getAttribute("data-id"));
+
+        const item = findItem(id);
+
+        if (item) {
+            downloadCalendar(item);
+        }
+    }
+
 
     // check if the delete button was clicked
     if (event.target.className === "delete-button") {

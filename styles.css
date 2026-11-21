@@ -1,3 +1,4 @@
+/* whole page */
 * {
     box-sizing: border-box;
 }
@@ -162,6 +163,20 @@ button:hover {
 
 .red {
     border-left-color: #c1694f;
+}
+
+
+/* add to calendar button */
+.calendar-button {
+    margin-top: 10px;
+    margin-right: 8px;
+    padding: 5px 12px;
+    background: #4f7a8a;
+    font-size: 12px;
+}
+
+.calendar-button:hover {
+    background: #3f6574;
 }
 
 
