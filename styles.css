@@ -81,6 +81,14 @@ select {
 }
 
 
+/* message shown while scanning a receipt */
+.scan-status {
+    margin: 8px 0 0 0;
+    font-size: 13px;
+    color: #6b7566;
+}
+
+
 /* buttons */
 button {
     margin-top: 20px;

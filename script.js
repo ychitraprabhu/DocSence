@@ -3,6 +3,8 @@ const form = document.getElementById("itemForm");
 const itemList = document.getElementById("itemList");
 const expiryCount = document.getElementById("expiryCount");
 const searchBox = document.getElementById("searchBox");
+const receiptInput = document.getElementById("receiptInput");
+const scanStatus = document.getElementById("scanStatus");
 const reminderButton = document.getElementById("reminderButton");
 
 
@@ -253,6 +255,207 @@ function showItems() {
 
 
 
+// short month names, used to find dates like "12 Mar 2025"
+const monthNames = "janfebmaraprmayjunjulaugsepoctnovdec";
+
+
+// add a date to the list if it looks valid
+function addDate(dates, year, month, day) {
+
+    if (month < 1 || month > 12 || day < 1 || day > 31) {
+        return;
+    }
+
+    if (year < 2000 || year > 2100) {
+        return;
+    }
+
+    dates.push(new Date(year, month - 1, day));
+}
+
+
+// find all dates in the text and sort them (oldest first)
+function findDates(text) {
+
+    const dates = [];
+
+
+    // dates like 12/03/2025 or 12-03-25 (day comes first)
+    const numberDates = text.matchAll(
+        /\b(\d{1,2})[\/\-.](\d{1,2})[\/\-.](\d{2,4})\b/g
+    );
+
+    for (const match of numberDates) {
+
+        let year = Number(match[3]);
+
+        // turn 25 into 2025
+        if (year < 100) {
+            year = year + 2000;
+        }
+
+        addDate(dates, year, Number(match[2]), Number(match[1]));
+    }
+
+
+    // dates like 12 Mar 2025
+    const wordDates = text.matchAll(
+        /\b(\d{1,2})\s+(jan|feb|mar|apr|may|jun|jul|aug|sep|oct|nov|dec)[a-z]*\.?,?\s+(\d{4})\b/gi
+    );
+
+    for (const match of wordDates) {
+
+        const month = monthNames.indexOf(match[2].toLowerCase()) / 3 + 1;
+
+        addDate(dates, Number(match[3]), month, Number(match[1]));
+    }
+
+
+    dates.sort(function (a, b) {
+        return a - b;
+    });
+
+    return dates;
+}
+
+
+// read the scanned text and guess the form details
+function readReceipt(text) {
+
+    const lower = text.toLowerCase();
+    const dates = findDates(text);
+
+    const result = {
+        purchase: "",
+        expiry: "",
+        category: "Other"
+    };
+
+
+    // choose a category from keywords
+    if (/insurance|policy|premium/.test(lower)) {
+        result.category = "Insurance";
+    }
+    else if (/subscription|renewal|plan/.test(lower)) {
+        result.category = "Subscription";
+    }
+    else if (/warranty|invoice|bill|serial|model/.test(lower)) {
+        result.category = "Warranty";
+    }
+
+
+    // the oldest date is most likely the purchase date
+    if (dates.length > 0) {
+        result.purchase = toDateText(dates[0]);
+    }
+
+
+    // look for words like "2 year warranty" or "warranty: 12 months"
+    let match = lower.match(/(\d+)\s*(year|yr|month)s?\s*(?:\w+\s)?warranty/);
+
+    if (!match) {
+        match = lower.match(/warranty[^0-9]{0,15}(\d+)\s*(year|yr|month)/);
+    }
+
+
+    if (match && dates.length > 0) {
+
+        const amount = Number(match[1]);
+        const start = dates[0];
+        let expiry;
+
+        if (match[2] === "month") {
+            expiry = new Date(
+                start.getFullYear(),
+                start.getMonth() + amount,
+                start.getDate()
+            );
+        }
+        else {
+            expiry = new Date(
+                start.getFullYear() + amount,
+                start.getMonth(),
+                start.getDate()
+            );
+        }
+
+        result.expiry = toDateText(expiry);
+    }
+    else if (
+        dates.length > 1 &&
+        (result.category === "Insurance" || result.category === "Subscription")
+    ) {
+        // for insurance and subscriptions the last date is usually the end date
+        result.expiry = toDateText(dates[dates.length - 1]);
+    }
+
+    return result;
+}
+
+
+// scan the image when a receipt is chosen
+receiptInput.addEventListener("change", async function () {
+
+    const file = receiptInput.files[0];
+
+    if (!file) {
+        return;
+    }
+
+    // the OCR library did not load (for example no internet)
+    if (typeof Tesseract === "undefined") {
+        scanStatus.textContent =
+            "Scanner could not load. Check your internet and refresh.";
+        return;
+    }
+
+    scanStatus.textContent = "Scanning receipt... 0%";
+
+    try {
+
+        // read the text from the image (this runs in the browser)
+        const result = await Tesseract.recognize(file, "eng", {
+            logger: function (message) {
+                if (message.status === "recognizing text") {
+                    scanStatus.textContent =
+                        "Scanning receipt... " +
+                        Math.round(message.progress * 100) + "%";
+                }
+            }
+        });
+
+        const found = readReceipt(result.data.text);
+
+        // fill the form with what was found
+        if (found.purchase) {
+            document.getElementById("purchaseDate").value = found.purchase;
+        }
+
+        if (found.expiry) {
+            document.getElementById("expiryDate").value = found.expiry;
+        }
+
+        document.getElementById("category").value = found.category;
+
+
+        if (found.purchase === "" && found.expiry === "") {
+            scanStatus.textContent =
+                "No dates found. Please fill the form yourself.";
+        }
+        else {
+            scanStatus.textContent =
+                "Done! Please check the details before adding.";
+        }
+
+    } catch (error) {
+
+        scanStatus.textContent =
+            "Could not read this image. Please fill the form yourself.";
+    }
+});
+
+
+
 // change the reminder button text
 function updateReminderButton() {
 
@@ -437,6 +640,7 @@ form.addEventListener("submit", function (event) {
 
     // clear the form
     form.reset();
+    scanStatus.textContent = "";
 
     // show the updated list
     showItems();

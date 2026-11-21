@@ -28,6 +28,12 @@
 
             <form id="itemForm">
 
+                <!-- scan a receipt to fill the form automatically -->
+                <label>Scan Receipt (optional)</label>
+                <input type="file" id="receiptInput" accept="image/*">
+                <p id="scanStatus" class="scan-status"></p>
+
+
                 <label>Name</label>
                 <input
                     type="text"
@@ -92,6 +98,9 @@
 
     </div>
 
+
+    <!-- OCR library (reads text from receipt images in the browser) -->
+    <script src="https://cdn.jsdelivr.net/npm/tesseract.js@5.1.1/dist/tesseract.min.js"></script>
 
     <script src="script.js"></script>
 
