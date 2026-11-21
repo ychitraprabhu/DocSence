@@ -10,12 +10,13 @@ A simple website to track when your warranties, insurance, subscriptions and doc
 - See how many days are left for each item
 - Colors show how soon it expires (green = safe, yellow = within 30 days, red = within 7 days or expired)
 - Shows how many items expire this month
+- Search items by name or category
 - Delete items you don't need
 
 ## Files
 - `index.html` — page structure
 - `styles.css` — layout and styling
-- `script.js` — add/edit/delete items, expiry and risk calculations
+- `script.js` — add/delete items, search, expiry and risk calculations
 
 ## How to run
 Download the files and open `index.html` in any browser.

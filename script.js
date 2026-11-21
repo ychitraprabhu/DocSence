@@ -2,6 +2,7 @@
 const form = document.getElementById("itemForm");
 const itemList = document.getElementById("itemList");
 const expiryCount = document.getElementById("expiryCount");
+const searchBox = document.getElementById("searchBox");
 
 
 // get saved items from localStorage
@@ -95,6 +96,36 @@ function countThisMonth() {
 }
 
 
+
+// get only the items that match the search text
+function getVisibleItems() {
+
+    const text = searchBox.value.trim().toLowerCase();
+
+    // no search text, so show everything
+    if (text === "") {
+        return items;
+    }
+
+    const result = [];
+
+    for (let i = 0; i < items.length; i++) {
+
+        const item = items[i];
+
+        if (
+            item.name.toLowerCase().includes(text) ||
+            item.category.toLowerCase().includes(text)
+        ) {
+            result.push(item);
+        }
+    }
+
+    return result;
+}
+
+
+
 // display all the items
 function showItems() {
 
@@ -107,18 +138,27 @@ function showItems() {
     });
 
 
+    // only show the items that match the search
+    const visibleItems = getVisibleItems();
+
+
     // show a message if there are no items
     if (items.length === 0) {
 
         itemList.innerHTML =
             "<p class='empty-text'>No items yet. Add your first one!</p>";
     }
+    else if (visibleItems.length === 0) {
+
+        itemList.innerHTML =
+            "<p class='empty-text'>No items match your search.</p>";
+    }
 
 
     // create a card for each item
-    for (let i = 0; i < items.length; i++) {
+    for (let i = 0; i < visibleItems.length; i++) {
 
-        const item = items[i];
+        const item = visibleItems[i];
         const daysLeft = getDaysLeft(item.expiryDate);
 
 
@@ -191,6 +231,7 @@ function showItems() {
 }
 
 
+
 // add a new item when the form is submitted
 form.addEventListener("submit", function (event) {
 
@@ -227,6 +268,10 @@ form.addEventListener("submit", function (event) {
     // show the updated list
     showItems();
 });
+
+
+// search while typing
+searchBox.addEventListener("input", showItems);
 
 
 // delete an item when the delete button is clicked
