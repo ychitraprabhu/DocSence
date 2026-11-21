@@ -112,6 +112,15 @@ button:hover {
 }
 
 
+/* reminder button */
+.reminder-button {
+    margin-top: 0;
+    margin-bottom: 15px;
+    padding: 8px 16px;
+    font-size: 13px;
+}
+
+
 /* search box */
 .search-box {
     margin-top: 0;

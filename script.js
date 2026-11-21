@@ -3,6 +3,7 @@ const form = document.getElementById("itemForm");
 const itemList = document.getElementById("itemList");
 const expiryCount = document.getElementById("expiryCount");
 const searchBox = document.getElementById("searchBox");
+const reminderButton = document.getElementById("reminderButton");
 
 
 // get saved items from localStorage
@@ -252,6 +253,92 @@ function showItems() {
 
 
 
+// change the reminder button text
+function updateReminderButton() {
+
+    // this browser has no notifications
+    if (!("Notification" in window)) {
+        reminderButton.style.display = "none";
+        return;
+    }
+
+    if (Notification.permission === "granted") {
+        reminderButton.textContent = "Reminders are on";
+    }
+    else if (Notification.permission === "denied") {
+        reminderButton.textContent = "Reminders blocked in browser settings";
+    }
+    else {
+        reminderButton.textContent = "Enable reminders";
+    }
+}
+
+
+// show a notification for items expiring in the next 7 days
+function checkReminders() {
+
+    if (!("Notification" in window)) {
+        return;
+    }
+
+    if (Notification.permission !== "granted") {
+        return;
+    }
+
+
+    // remember which items were already shown today
+    const todayText = new Date().toDateString();
+    let notified = JSON.parse(localStorage.getItem("notified")) || {};
+
+    if (notified.date !== todayText) {
+        notified = { date: todayText, ids: [] };
+    }
+
+
+    for (let i = 0; i < items.length; i++) {
+
+        const item = items[i];
+        const daysLeft = getDaysLeft(item.expiryDate);
+
+        // only remind for items expiring today up to 7 days from now
+        if (daysLeft < 0 || daysLeft > 7) {
+            continue;
+        }
+
+        // skip items already shown today
+        if (notified.ids.includes(item.id)) {
+            continue;
+        }
+
+        try {
+            new Notification("DocSence", {
+                body: item.name + " - " + getDaysText(daysLeft)
+            });
+
+            notified.ids.push(item.id);
+        } catch (error) {
+            // some browsers (like mobile Chrome) do not allow this
+        }
+    }
+
+    localStorage.setItem("notified", JSON.stringify(notified));
+}
+
+
+// ask for permission when the button is clicked
+reminderButton.addEventListener("click", async function () {
+
+    const permission = await Notification.requestPermission();
+
+    updateReminderButton();
+
+    if (permission === "granted") {
+        checkReminders();
+    }
+});
+
+
+
 // find an item using its id
 function findItem(id) {
 
@@ -405,3 +492,7 @@ itemList.addEventListener("click", function (event) {
 
 // show saved items when the page opens
 showItems();
+
+// set up reminders when the page opens
+updateReminderButton();
+checkReminders();
